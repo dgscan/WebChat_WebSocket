@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+        #mainframe{
+            border: lightgray solid 1px;
+            border-radius: 5px;
+            width: 80%;
+            margin: auto;
+        }
+        .row{
+            padding-top: 25px;
+            width: 100px;
+        }
+        #left{
+            display: inline-block;
+        }
+        #right{
+            display: inline-block;
+        }
+        body{
+            font-family: Calibri;
+        }
+        #bottom{
+            padding: 20px;
+        }
+    </style>
+
+    <script language="JavaScript" type="text/javascript">
+
+        var wsUri="ws://127.0.0.1:1337";
+        var websocket;
+
+        function init() {
+
+            websocket = new  WebSocket(wsUri);
+            
+            websocket.onopen = function (event) {
+            };
+
+            websocket.onmessage = function (event) {
+
+                console.log(event.data);
+
+                if(event.data){
+                    document.getElementById("content").innerHTML="Üye oldunuz. Giriş yapmak için anasayfaya dönün."
+                }
+
+            };
+            
+        }
+
+        window.addEventListener("load",init,false);
+
+        function register() {
+            var userid = document.getElementById("userid").value;
+            var password = document.getElementById("password").value;
+            var city = document.getElementById("city").value;
+
+            websocket.send(JSON.stringify({'to':'register','userid':userid,'password':password,'city':city}));
+        }
+
+
+    </script>
+</head>
+<body>
+    <div id="mainframe">
+        <div id="left">
+            <div class="row">
+                Kullanıcı Adı :
+            </div>
+            <div class="row">
+                Parola :
+            </div>
+            <div class="row">
+                Şehir :
+            </div>
+        </div>
+
+        <div id="right">
+            <div class="row">
+                <input style="width: 200px" type="text" id="userid">
+            </div>
+            <div class="row">
+                <input style="width: 200px" type="password" id="password">
+            </div>
+            <div class="row">
+                <input style="width: 200px"  type="text" id="city">
+            </div>
+        </div>
+        <div id="bottom">
+            <input type="submit" value="Kayıt Ol" onclick="register()">
+        </div>
+
+        <p id="content"></p>
+    </div>
+</body>
+</html>

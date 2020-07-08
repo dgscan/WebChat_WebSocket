@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body{
+            font-family: Calibri;
+        }
+        #main-frame{
+            border: lightgray solid 0.5px;
+            border-radius: 10px;
+            background-color: burlywood;
+            padding: 10px;
+            width: 100%;
+
+        }
+        #left{
+            border: lightgray solid 1px;
+            border-radius: 10px;
+            background-color: white;
+            width: 80%;
+            margin: auto;
+            display: inline-block;
+            height: 350px;
+
+
+        }
+        #right{
+            border: lightgray solid 1px;
+            border-radius: 10px;
+            background-color: white;
+            width: 15%;
+            margin: auto;
+            display: inline-block;
+            height: 350px;
+
+        }
+        #bottom{
+            padding-top: 20px;
+        }
+
+        #inp{
+            width: 350px;
+            height: 30px;
+            border-radius: 5px;
+        }
+        #btn{
+            width: 100px;
+            height: 40px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<script language="javascript" type="text/javascript">
+    var wsUri = "ws://127.0.0.1:1337/";
+    var websocket;
+    var output;
+
+
+
+    function init() {
+
+        loadUsers();
+        loadMessages();
+
+    }
+
+    window.addEventListener("load",init,false);
+
+    function sendMessage() {
+
+        var textsend = document.getElementById("inp").value;
+
+        document.getElementById("inp").value="";
+
+        websocket.send(JSON.stringify({'to':'chat','msg':textsend}));
+    }
+
+
+    function loadMessages() {
+
+        websocket = new WebSocket(wsUri);
+
+        websocket.onopen = function (evt) {
+            console.log("Connected");
+        };
+        websocket.onmessage = function (event) {
+
+            var content = document.getElementById("chat-content");
+
+            var parsedContent = JSON.parse(event.data);
+
+            var type = parsedContent.type;
+
+            if(type==="chat"){
+
+                var user_id = parsedContent.user_id;
+                var msg = parsedContent.msg;
+
+                content.innerHTML+=user_id+" : "+msg+"<br/>";
+            }
+            else if (type==="loadUsers"){
+
+                var onlineUsers = parsedContent.onlineUsers;
+                var offlineUsers = parsedContent.offlineUsers;
+
+                document.getElementById("onlineUserDiv").innerHTML="";
+                document.getElementById("offlineUserDiv").innerHTML="";
+
+                if(onlineUsers.length>0){
+                    for(i=0; i<onlineUsers.length;i++){
+                        document.getElementById("onlineUserDiv").innerHTML+=onlineUsers[i]+"<input type='button' value='Send Private Msg' id='"+onlineUsers[i]+"' onclick='privateMsg(this.id)'><br>";
+                    }
+                }
+
+                if(offlineUsers.length>0){
+                    for(i=0; i<offlineUsers.length;i++){
+                        document.getElementById("offlineUserDiv").innerHTML+=offlineUsers[i]+"<br>";
+                    }
+                }
+            }
+
+        };
+    }
+
+
+    function loadUsers() {
+
+
+        setInterval(function () {
+            websocket.send(JSON.stringify({'to':'loadOnlineUsers'}));
+        },900);
+
+    }
+
+    function privateMsg(u) {
+
+        console.log("private to: "+u);
+
+        websocket.send(JSON.stringify({'to':'privateMsgTo','msgTo':u}));
+
+        window.location.href='private.html';
+
+    }
+
+    function logout() {
+        websocket.send(JSON.stringify({'to':'logout'}));
+
+
+        if(websocket.readyState=== WebSocket.OPEN){
+            websocket.close(1000,"Disconnection.");
+        }
+
+        window.location.href='index.html';
+
+    }
+
+    var loadFile = function(event) {
+
+        var output = document.getElementById('output');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        console.log(output);
+        console.log(output.src);
+    };
+
+
+
+</script>
+
+<body>
+<div>Welcome, <dib id="user_name"></dib> </div>
+    <div id="main-frame">
+        <div id="left">
+            Chat Main Screen:
+            <p id="chat-content"></p>
+        </div>
+        <div id="right">
+            <strong>Online Users:</strong>
+            <div id="onlineUserDiv"></div>
+            <strong>Offline Users:</strong>
+            <div id="offlineUserDiv"></div>
+
+        </div>
+
+        <div id="bottom"><div><input type="text" id="inp"> <input type="button" value="Gönder" id="btn" onclick="sendMessage()"> <input
+                type="button" value="Çıkış Yap" onclick="logout()" style="float: right; width: 90px; height: 40px;
+                border-radius: 3px; margin-right: 30px"> </div>
+            <br><br>
+            <div>Dosya Gönder
+                <input type="file" id="filepath" accept="*/*" onchange="loadFile(event)">
+            </div>
+        </div>
+    </div>
+
+<div id="output"></div>
+</body>
+</html>

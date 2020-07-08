@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        #frame-div{
+            border: lightgray solid 1px;
+            border-radius: 3px;
+            width: 40%;
+            margin: auto;
+        }
+        body{
+            font-family: Calibri;
+        }
+        .label{
+            display: table-cell;
+            padding-top: 15px;
+            padding-bottom: 5px;
+        }
+        .table{
+            display: table;
+        }
+        .table-row{
+            display: table-row;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script language="JavaScript" type="text/javascript">
+
+    var wsUri ="ws://127.0.0.1:1337";
+
+    function init() {
+
+        websocket = new WebSocket(wsUri);
+
+        websocket.onopen = function (event) {
+        };
+
+        websocket.onmessage = function (event) {
+
+            var content = document.getElementById("content");
+            console.log("\n"+event.data);
+
+            var parsedContent = JSON.parse(event.data);
+            var uid = parsedContent.uid;
+            var isMember = parsedContent.isMember;
+
+            console.log(isMember);
+
+            if (isMember){
+                content.innerHTML="Welcome, "+uid+"<br>";
+                window.location.href='chat.html';
+            }
+            else if(!isMember) {
+                content.innerHTML+="Incorrect username / password!"+"<br>";
+            }
+
+
+        }
+
+    }
+
+    window.addEventListener("load",init,false);
+
+    function Login() {
+        var uid = document.getElementById("user-id").value;
+        var pass = document.getElementById("password").value;
+
+        websocket.send(JSON.stringify({'to':'login','uid':uid,'pass':pass}));
+
+    }
+
+</script>
+
+<div id="frame-div" class="table">
+
+    <div class="table-row">
+
+
+        <div class="label">Kullanıcı Adı:</div>
+        <div class="label"><input id="user-id" type="text"></div>
+
+    </div>
+    <div class="table-row">
+
+        <div class="label">Parola:</div>
+        <div class="label"><input id="password" type="password"></div>
+
+    </div>
+    <div class="table-row">
+
+        <div class="label">
+            <input type="button" value="Giriş Yap" onclick="Login()">
+            <form action="registration.html" style="display: inline-block">
+                <input type="submit" value="Üye Ol">
+            </form></div>
+
+    </div>
+
+</div>
+
+<p id="content"></p>
+
+
+</body>
+</html>

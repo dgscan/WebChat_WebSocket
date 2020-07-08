@@ -1,0 +1,33 @@
+{
+  "name": "websocket_web_app",
+  "version": "1.0.0",
+  "description": "General & Private Chat Room via Web Socket",
+  "main": "node server.js",
+  "dependencies": {
+    "http": "^0.0.0",
+    "mysql.js": "^1.0.2",
+    "mysql": "^2.16.0",
+    "node": "^11.2.0",
+    "node.js": "^0.0.0",
+    "websocket": "^1.0.28"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "open index.html",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dgscan/WebChat_WebSocket.git"
+  },
+  "keywords": [
+    "chat",
+    "websocket"
+  ],
+  "author": "Doguscan Yaginli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dgscan/WebChat_WebSocket/issues"
+  },
+  "homepage": "https://github.com/dgscan/WebChat_WebSocket#readme"
+}
